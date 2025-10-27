@@ -5,6 +5,9 @@
   <title>Gráfico de Barras con D3.js</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
+    body {
+      font-family: sans-serif;
+    }
     .bar {
       fill: steelblue;
     }
@@ -17,6 +20,7 @@
   </style>
 </head>
 <body>
+  <h2>Gráfico de Barras con D3.js</h2>
   <svg width="600" height="400"></svg>
 
   <script>
@@ -25,10 +29,10 @@
     const svg = d3.select("svg");
     const width = +svg.attr("width");
     const height = +svg.attr("height");
-    const margin = { top: 20, right: 30, bottom: 30, left: 40 };
+    const margin = { top: 20, right: 30, bottom: 40, left: 40 };
 
     const x = d3.scaleBand()
-      .domain(data.map((d, i) => i))
+      .domain(data.map((_, i) => i))
       .range([margin.left, width - margin.right])
       .padding(0.1);
 
@@ -38,12 +42,11 @@
       .range([height - margin.bottom, margin.top]);
 
     svg.append("g")
-      .attr("fill", "steelblue")
       .selectAll("rect")
       .data(data)
       .join("rect")
         .attr("class", "bar")
-        .attr("x", (d, i) => x(i))
+        .attr("x", (_, i) => x(i))
         .attr("y", d => y(d))
         .attr("height", d => y(0) - y(d))
         .attr("width", x.bandwidth());
@@ -62,4 +65,6 @@
   </script>
 </body>
 </html>
-# chartlab
+
+
+
