@@ -1,0 +1,50 @@
+require("dotenv").config();
+const express = require("express");
+const path = require("path");
+
+const app = express();
+const PORT = 3000;
+
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
+
+app.post("/generar-ensayo", async (req, res) => {
+  const { tema } = req.body;
+
+  if (!tema) {
+    return res.status(400).json({ error: "Debes proporcionar un tema" });
+  }
+
+  try {
+    const respuesta = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4.1",
+        input: `Eres un generador de ensayos académicos. Escribe un ensayo bien estructurado sobre el siguiente tema: ${tema}`
+      })
+    });
+
+    const data = await respuesta.json();
+
+    if (!respuesta.ok) {
+      console.error(data);
+      return res.status(500).json({ error: "Error en la API de OpenAI" });
+    }
+
+    const texto = data.output[0].content[0].text;
+
+    res.json({ resultado: texto });
+
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Error generando el ensayo" });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
